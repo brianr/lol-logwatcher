@@ -133,6 +133,19 @@ PROJECT_AREAS = {
 }
 
 ###########################################
+# ratchet
+###########################################
+
+RATCHET_ENABLED = True
+RATCHET_ACCESS_TOKEN = '32charhexstringgoeshere'
+RATCHET_ENDPOINT = 'http://www.ratchet.io/api/error/'
+RATCHET_ENVIRONMENT = 'production'
+RATCHET_BRANCH = 'master'
+RATCHET_ROOT = '/path/to/code/root'
+RATCHET_GITHUB_ACCOUNT = 'instaedu'
+RATCHET_GITHUB_REPO = 'instaedu'
+
+###########################################
 # regular expressions / string formats
 ###########################################
 

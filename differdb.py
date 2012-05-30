@@ -59,7 +59,10 @@ class LolflyError(object):
         self.initialize()
 
     def initialize(self):
-        self.timestamp = time.strftime('%Y%m%d %H:%M:%S', time.localtime())
+        localtime = time.localtime()
+        self.unix_timestamp = time.mktime(localtime)
+        self.timestamp = time.strftime('%Y%m%d %H:%M:%S', localtime)
+        
         self.product = None # attempt to figure out what we are
         self.revision = None # revision info, get this from the filesystem
         self.error_msg = None # the full error message
@@ -84,6 +87,35 @@ class LolflyError(object):
                                         self.exception,
                                         int(time.time()), 
                                         util.get_differ_hostname().strip())
+    
+    def ratchet_send_report(self):
+        try:
+            self._ratchet_send_report()
+        except Exception, e:
+            print "Exception while sending error to Ratchet.", e
+
+    def _ratchet_send_report(self):
+        import json
+        import requests
+
+        payload = {}
+        payload['access_token'] = RATCHET_ACCESS_TOKEN
+        payload['timestamp'] = self.unix_timestamp
+
+        payload['body'] = self.error_msg
+
+        params = {}
+        params['server.host'] = util.get_differ_hostname().strip()
+        params['server.environment'] = RATCHET_ENVIRONMENT
+        params['server.branch'] = RATCHET_BRANCH
+        params['server.root'] = RATCHET_ROOT
+        params['server.github.account'] = RATCHET_GITHUB_ACCOUNT
+        params['server.github.repo'] = RATCHET_GITHUB_REPO
+        params['notifier.name'] = 'differ_ratchet'
+        payload['params'] = json.dumps(params)
+
+        requests.post(RATCHET_ENDPOINT, data=payload, timeout=1)
+
 
 class DifferDB(object):
     """ Basic DB class for interacting with our database. 

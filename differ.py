@@ -190,6 +190,7 @@ def process_completed_error(local_err_msg, lolfly_error, debug, db_inject):
 
     if debug: lolfly_error.print_pretty()
     if db_inject: lolfly_error.differ_db_inject()
+    if RATCHET_ENABLED: lolfly_error.ratchet_send_report()
 
     return location, line_number, method, exception
 
